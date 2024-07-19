@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #cfe8ef;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e5e5e5;
+            padding: 20px;
+            text-align: right;
+        }
+        header a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #66e066;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-item {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .available {
+            background-color: #ccffcc;
+            color: #2e7d32;
+        }
+        .unavailable {
+            background-color: #ffcccc;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="company-name">
+            <h1>DomainSearch</h1>
+          </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Services</a>
+            <a href="#">Products</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="domainInput" placeholder="Search Domain...">
+            <button onclick="searchDomain()">Search</button>
+        </div>
+        <div class="results" id="results"></div>
+    </div>
+    <script>
+        const API_URL = 'https://dns.google/resolve?name=';
+
+        async function searchDomain() {
+            const domain = document.getElementById('domainInput').value;
+            const extensions = ['com', 'in', 'io', 'ink'];
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            for (let ext of extensions) {
+                const fullDomain = `${domain}.${ext}`;
+                const response = await fetch(API_URL + fullDomain);
+                const data = await response.json();
+                
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('result-item');
+                
+                if (data.Status === 0) {
+                    resultItem.classList.add('available');
+                    resultItem.textContent = `${fullDomain} is available.`;
+                } else {
+                    resultItem.classList.add('unavailable');
+                    resultItem.textContent = `${fullDomain} is unavailable.`;
+                }
+
+                resultsContainer.appendChild(resultItem);
+            }
+        }
+    </script>
+</body>
+</html>
